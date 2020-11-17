@@ -15,6 +15,9 @@
 4)　既存データ更新
 1．＃2の「参照」の後、「登録」が押されたら、データベースシートの同じIDの行を更新する。
 
+5)　エントリーシートの初期化
+「クリア」ボタンが押されたら、エントリーシートに入っている値を消す。関数はそのまま残す。
+
 
 */
 
@@ -83,6 +86,90 @@ const dataEntryCells = [
     'M34', // index 50 - その他費用 【関数】
     'M42', // index 51 - 費用合計 【関数】
     'M36' // index 52 - 収益対費用 【関数】
+];
+
+
+
+/* データ入力シートのセル番号一覧　関数を除く
+*/
+const dataEntryCellsExcFormulae = [
+    'B2', // index 0 - No
+    'B6', // index 1 - 日付
+    'F6', // index 2 - 会場名
+    '', // index 3 - 市区町村 【関数】
+    'B8', // index 4 - イベント名
+    'C10', // index 5 - 前売料金（A）
+    'C12', // index 6 - 前売料金（B）
+    'C14', // index 7 - 前売料金（C）
+    'C16', // index 8 - 前売配信料金
+    'C18', // index 9 - 当日料金（A）
+    'C20', // index 10 - 当日料金（B）
+    'C22', // index 11 - 当日料金（C）
+    'C24', // index 12 - 当日配信料金
+    'E10', // index 13 - 前売り備考
+    'E18', // index 14 - 当日備考
+    'B26', // index 15 - ドリンク代
+    'E26', // index 16 - 部数
+    'A36', // index 17 - メモ
+    'J6', // index 18 - アーティスト名
+    '', // index 19 - RK 【関数】
+    'K8', // index 20 - 前売集客（A）
+    'K10', // index 21 - 前売集客（B）
+    'K12', // index 22 - 前売集客（C）
+    'K14', // index 23 - 前売集客（配信）
+    'K16', // index 24 - 当日集客（A）
+    'K18', // index 25 - 当日集客（B）
+    'K20', // index 26 - 当日集客（C）
+    'K22', // index 27 - 当日集客（配信）
+    'M10', // index 28 - 出演料固定
+    'M12', // index 29 - 出演料歩合（CB・%）
+    'M14', // index 30 - 出演料歩合（CB・定額）
+    'M16', // index 31 - 出演料歩合（配信・％）
+    'M18', // index 32 - 出演料歩合（配信・定額）
+    'M20', // index 33 - その他出演料
+    '', // index 34 - 前売来場（A）収益 【関数】
+    '', // index 35 - 前売来場（B）収益 【関数】
+    '', // index 36 - 前売来場（C）収益 【関数】
+    '', // index 37 - 前売配信収益 【関数】
+    '', // index 38 - 当日来場（A）収益 【関数】
+    '', // index 39 - 当日来場（B）収益 【関数】
+    '', // index 40 - 当日来場（C）収益 【関数】
+    '', // index 41 - 当日配信収益 【関数】
+    'K40', // index 42 - その他収益
+    'M40', // index 43 - その他収益備考
+    '', // index 44 - 収益合計 【関数】
+    '', // index 45 - 固定費用 【関数】
+    '', // index 46 - 歩合（CB・％）費用 【関数】
+    '', // index 47 - 歩合（CB・定額）費用 【関数】
+    '', // index 48 - 歩合（配信・％） 【関数】
+    '', // index 49 - 歩合（配信・定額） 【関数】
+    '', // index 50 - その他費用 【関数】
+    '', // index 51 - 費用合計 【関数】
+    '' // index 52 - 収益対費用 【関数】
+];
+
+
+
+/* 登録後にクリアするデータ入力シートのセル番号一覧　
+*/
+const dataEntryCellsToClear = [
+    'J6', // index 18 - アーティスト名
+    'K8', // index 20 - 前売集客（A）
+    'K10', // index 21 - 前売集客（B）
+    'K12', // index 22 - 前売集客（C）
+    'K14', // index 23 - 前売集客（配信）
+    'K16', // index 24 - 当日集客（A）
+    'K18', // index 25 - 当日集客（B）
+    'K20', // index 26 - 当日集客（C）
+    'K22', // index 27 - 当日集客（配信）
+    'M10', // index 28 - 出演料固定
+    'M12', // index 29 - 出演料歩合（CB・%）
+    'M14', // index 30 - 出演料歩合（CB・定額）
+    'M16', // index 31 - 出演料歩合（配信・％）
+    'M18', // index 32 - 出演料歩合（配信・定額）
+    'M20', // index 33 - その他出演料
+    'K40', // index 42 - その他収益
+    'M40' // index 43 - その他収益備考
 ];
 
 /* データベースシートの列一覧　
@@ -244,7 +331,7 @@ function registerDataToDatabasesheet() {
 
     var idInEntrySheet = entryValueArray[0];
 
-    Logger.log("idInEntrySheet=" + idInEntrySheet);
+    // Logger.log("idInEntrySheet=" + idInEntrySheet);
 
     var rowNumToEnter = 0;
 
@@ -270,17 +357,28 @@ function registerDataToDatabasesheet() {
         }
     }
 
-    Logger.log("rowNumToEnter=" + rowNumToEnter);
+    // Logger.log("rowNumToEnter=" + rowNumToEnter);
 
     // データをデータベースに入れる
 
     var cellRange = databaseColumnsAll[0] + rowNumToEnter + ":" + databaseColumnsAll[databaseColumnsAll.length - 1] + rowNumToEnter;
-    Logger.log('cellRange:' + cellRange);
+    // Logger.log('cellRange:' + cellRange);
 
     range = databaseSheet.getRange(cellRange);
     var nestedEntryValueArray = [entryValueArray];
     range.setValues(nestedEntryValueArray);
 
+    // エントリーシートからデータを消去する。
+    // Utilities.sleep(3000);
+
+    dataEntryCellsToClear.forEach((entryCell, index) => {
+
+        var range = entrySheet.getRange(entryCell);
+        //マージされたセルなど、フォーマットを残しておくため、clear()ではなくclearContent()を使う。
+        range.clearContent();
+
+
+    });
 }
 
 
@@ -322,18 +420,44 @@ function pullDataFromDatabasesheet() {
  */
 function deleteRowFromDatabasesheet() {
 
+    // Logger.log('deleteRowFromDatabasesheet start');
+
     var entrySheet = thisSpreadsheet.getSheetByName(dataEntrySheetName);
 
     var databaseSheet = thisSpreadsheet.getSheetByName(databaseSheetName);
 
     var idInEntrySheet = getCellValue(entrySheet, dataEntryCells[0]);
 
-    Logger.log("idInEntrySheet=" + idInEntrySheet);
+    // Logger.log("idInEntrySheet=" + idInEntrySheet);
 
-    Logger.log("getRowOfIdInDatabase(idInEntrySheet)=" + getRowOfIdInDatabase(idInEntrySheet));
+    // Logger.log("getRowOfIdInDatabase(idInEntrySheet)=" + getRowOfIdInDatabase(idInEntrySheet));
 
     databaseSheet.deleteRow(getRowOfIdInDatabase(idInEntrySheet));
+
+    // Logger.log('deleteRowFromDatabasesheet end');
 }
+
+
+
+/*　「クリア」ボタンが押されたときのfunction。
+エントリーシートを空にする。関数のセルは除く。
+ */
+function clearEntryFromEntrysheet() {
+
+    var entrySheet = thisSpreadsheet.getSheetByName(dataEntrySheetName);
+
+    dataEntryCellsExcFormulae.forEach((entryCell, index) => {
+
+        if (entryCell !== '') {
+            var range = entrySheet.getRange(entryCell);
+            //マージされたセルなど、フォーマットを残しておくため、clear()ではなくclearContent()を使う。
+            range.clearContent();
+        }
+
+    });
+}
+
+
 
 
 
@@ -354,7 +478,7 @@ function getEntrySheetValues(sheet) {
     });
 
     valueArray.forEach((valueContents, index) => {
-        Logger.log('valueContents index=' + index + ": " + valueContents);
+        // Logger.log('valueContents index=' + index + ": " + valueContents);
     });
 
     return valueArray;
@@ -381,7 +505,7 @@ function getDatabaseSheetValues(sheet, rowNum) {
     });
 
     valueArray.forEach((valueContents, index) => {
-        Logger.log('valueContents index=' + index + ": " + valueContents);
+        // Logger.log('valueContents index=' + index + ": " + valueContents);
     });
 
     return valueArray;
@@ -418,7 +542,7 @@ function getNextId() {
         }
     }
 
-    Logger.log("getNextId return:" + (max + 1));
+    // Logger.log("getNextId return:" + (max + 1));
     return max + 1;
 }
 
@@ -432,7 +556,7 @@ function getRowOfIdInDatabase(id) {
     var column = 1; //column Index   
     var columnValues = sheet.getRange(2, column, sheet.getLastRow()).getValues(); //First 2 rows are header rows
 
-    Logger.log("getRowOfIdInDatabase sheet.getLastRow()=" + sheet.getLastRow());
+    // Logger.log("getRowOfIdInDatabase sheet.getLastRow()=" + sheet.getLastRow());
     var rowNum = 0;
 
     for (i = 0; i < columnValues.length; i++) {
@@ -441,7 +565,7 @@ function getRowOfIdInDatabase(id) {
         }
     }
 
-    Logger.log("search ID:" + id + " Returned rowNum:" + rowNum);
+    // Logger.log("search ID:" + id + " Returned rowNum:" + rowNum);
 
     return rowNum;
 }
